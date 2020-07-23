@@ -13,12 +13,15 @@
             body {
                 font-family:Verdana, Geneva, Tahoma, sans-serif;
                 text-align:center;
+                background-color:#F4B41A;
+                /*Blue: #143D59*/
             }
             canvas {
                 border:1px solid black;
+                background-color:white;
             }
             #title {
-                font-size:1.5em;
+                font-size:1.8em;
                 font-weight:bold;
             }
             #info {
@@ -27,12 +30,20 @@
             #gridWidth {
                 width:4em;
             }
+            button {
+                font-weight:bold;
+                padding-left:0.5em;
+                padding-right:0.5em;
+                padding-top:0.2em;
+                padding-bottom:0.2em;
+                border-radius:5px;
+            }
         </style>
     </head>
     <body>
         <div id="title">MazeMaker</div>
         <div id="info">Aryan Mittal<br>(Explanation in README)</div><br>
-        <div>Grid Size: <input type="number" id="gridWidth" value="10"> <button onclick="start()">Start</button></div><br>
+        <div>Grid Size: <input type="number" id="gridWidth" value="10"> <button onclick="start()">START</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
     <script>
@@ -40,6 +51,7 @@
         var ctx = c.getContext("2d");
         c.width = 500;
         c.height = 500;
+        if(window.innerWidth < 500) { c.width = window.innerWidth-10; c.height = window.innerWidth-10; }
         var WIDTH = c.width;
         var HEIGHT = c.height;
         var gridWidth = 10;
@@ -166,7 +178,7 @@
             gridHeight = Number(document.getElementById("gridWidth").value);
 
             if(gridWidth < 1) { alert("Please choose a grid size greater than 1."); }
-            
+
             cells = [];
             snake = [];
 
@@ -181,6 +193,7 @@
             cells[0][0].visited = true;
             cells[0][0].sides[0] = false;
             
+            c.style.border = "1px solid black";
             clear();
             interval = setInterval(draw, 25);
         }
