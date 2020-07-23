@@ -9,8 +9,27 @@
         <meta name="keywords" content="Aryan M Games, AryanM, Scheduler, AryanM Scheduler">
         <meta name="language" content="English">
         <link rel="icon" href="icon.png">
+        <style>
+            body {
+                font-family:Verdana, Geneva, Tahoma, sans-serif;
+                text-align:center;
+            }
+            canvas {
+                border:1px solid black;
+            }
+            #title {
+                font-size:1.5em;
+                font-weight:bold;
+            }
+            #info {
+                font-size:1em;
+            }
+        </style>
     </head>
     <body>
+        <div id="title">MazeMaker</div>
+        <div id="info">Aryan Mittal<br>(Explanation in README)</div><br>
+        <div>Grid Width: <input type="number" id="gridWidth" style="width:4em;" value="10"> <button onclick="start()">Start</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
     <script>
@@ -22,6 +41,8 @@
         var HEIGHT = c.height;
         var gridWidth = 10;
         var gridHeight = 10;
+        var interval;
+        var done = false;
 
         function rect(x, y, w, h) {
             ctx.beginPath();
@@ -67,27 +88,103 @@
         var cells = [];
         var snake = [];
 
-        for(var i = 0; i < gridWidth; ++i) {
-            cells.push([]);
-            for(var j = 0; j < gridHeight; ++j) {
-                cells[i].push(new Cell(i, j));
-            }
-        }
-
         function draw() {
+            clear();
             for(var i = 0; i < cells.length; ++i) {
                 for(var j = 0; j < cells[i].length; ++j) {
-                    cells[i][j].draw();
+                    if(cells[i][j].visited) { cells[i][j].draw(); }
                 }
             }
 
             for(var i = 0; i < snake.length; ++i) {
-                for(var j = 0; j < cells[i].length; ++j) {
-                    cells[i][j].draw(true);
+                snake[i].draw(true);
+            }
+
+            if(!done) {
+                if(snake.length === 0) { //done!
+                    stop();
+                } else {
+                    snakeStep();
                 }
             }
         }
 
-        setInterval(draw, 100);
+        function snakeStep() {
+            var top = snake[snake.length-1];
+            var order = shuffleArray(["N", "E", "S", "W"]);
+            var found = false;
+            for(var i = 0; i < order.length; ++i) {
+                if(order[i] === "N" && top.y > 0 && !cells[top.x][top.y-1].visited) { //go north
+                    cells[top.x][top.y-1].visited = true;
+                    cells[top.x][top.y-1].sides[2] = false;
+                    cells[top.x][top.y].sides[0] = false;
+                    snake.push(cells[top.x][top.y-1]);
+                    found = true;
+                    break;
+                }
+                else if(order[i] === "E" && top.x < gridWidth-1 && !cells[top.x+1][top.y].visited) {
+                    cells[top.x+1][top.y].visited = true;
+                    cells[top.x+1][top.y].sides[3] = false;
+                    cells[top.x][top.y].sides[1] = false;
+                    snake.push(cells[top.x+1][top.y]);
+                    found = true;
+                    break;
+                }
+                else if(order[i] === "S" && top.y < gridHeight-1 && !cells[top.x][top.y+1].visited) {
+                    cells[top.x][top.y+1].visited = true;
+                    cells[top.x][top.y+1].sides[0] = false;
+                    cells[top.x][top.y].sides[2] = false;
+                    snake.push(cells[top.x][top.y+1]);
+                    found = true;
+                    break;
+                }
+                else if(order[i] === "W" && top.x > 0 && !cells[top.x-1][top.y].visited) {
+                    cells[top.x-1][top.y].visited = true;
+                    cells[top.x-1][top.y].sides[1] = false;
+                    cells[top.x][top.y].sides[3] = false;
+                    snake.push(cells[top.x-1][top.y]);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) {
+                snake.pop();
+            }
+        }
+
+        function start() {
+            gridWidth = Number(document.getElementById("gridWidth").value);
+            gridHeight = Number(document.getElementById("gridWidth").value);
+
+            for(var i = 0; i < gridWidth; ++i) {
+                cells.push([]);
+                for(var j = 0; j < gridHeight; ++j) {
+                    cells[i].push(new Cell(i, j));
+                }
+            }
+
+            snake.push(cells[0][0]);
+            cells[0][0].visited = true;
+            cells[0][0].sides[0] = false;
+            
+            interval = setInterval(draw, 25);
+        }
+        
+        function stop() {
+            done = true;
+            cells[gridWidth-1][gridHeight-1].sides[2] = false;
+            clearInterval(interval);
+            draw();
+            c.style.border = "none";
+        }
+
+        function shuffleArray(array) {
+            for(let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
     </script>
 </html>
