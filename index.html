@@ -25,6 +25,7 @@
             canvas {
                 border:1px solid black;
                 background-color:white;
+                touch-action: manipulation;
             }
             #title {
                 font-size:1.8em;
@@ -72,16 +73,16 @@
         var cursorY;
         var done = false;
 
-        c.addEventListener("mousemove", (e) => {
+        function mouseMove(e) {
             var rect = c.getBoundingClientRect();
             cursorX = Math.floor((e.clientX - rect.left)*gridWidth/WIDTH);
             cursorY = Math.floor((e.clientY - rect.top)*gridHeight/HEIGHT);
-            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done && mouseDown) {
+            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done && (e.shiftKey === undefined || mouseDown)) { //e.shiftkey is undefined on mobile
                 cells[cursorX][cursorY].colored = !e.shiftKey;
                 cells[cursorX][cursorY].draw();
             }
-        });
-        document.onmousedown = function(e) {
+        }
+        function onMouseDown(e) {
             mouseDown = true;
             var rect = c.getBoundingClientRect();
             cursorX = Math.floor((e.clientX - rect.left)*gridWidth/WIDTH);
@@ -91,6 +92,19 @@
                 cells[cursorX][cursorY].draw();
             }
         }
+        c.addEventListener("mousemove", (e) => {
+            mouseMove(e);
+        });
+        c.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            if(e.touches) { e = e.touches[0]; }
+            mouseMove(e);
+            return false;
+        })
+        c.addEventListener("mousedown", function(e) {
+            onMouseDown(e);
+        });
+        
         document.onmouseup = function(e) {
             mouseDown = false;
         }
