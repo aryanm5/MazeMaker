@@ -41,6 +41,8 @@
         var HEIGHT = c.height;
         var gridWidth = 10;
         var gridHeight = 10;
+        var cells = [];
+        var snake = [];
         var interval;
         var done = false;
 
@@ -84,9 +86,6 @@
                 }
             }
         }
-
-        var cells = [];
-        var snake = [];
 
         function draw() {
             clear();
@@ -154,8 +153,13 @@
         }
 
         function start() {
+            done = false;
+            
             gridWidth = Number(document.getElementById("gridWidth").value);
             gridHeight = Number(document.getElementById("gridWidth").value);
+
+            cells = [];
+            snake = [];
 
             for(var i = 0; i < gridWidth; ++i) {
                 cells.push([]);
