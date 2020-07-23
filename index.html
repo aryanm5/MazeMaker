@@ -15,6 +15,12 @@
                 text-align:center;
                 background-color:#F4B41A;
                 /*Blue: #143D59*/
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none; 
+                user-select: none;
             }
             canvas {
                 border:1px solid black;
@@ -61,8 +67,33 @@
         var changedCells = [];
         var changedSnakeCells = [];
         var interval;
-
+        var mouseDown = false;
+        var cursorX;
+        var cursorY;
         var done = false;
+
+        c.addEventListener("mousemove", (e) => {
+            var rect = c.getBoundingClientRect();
+            cursorX = Math.floor((e.clientX - rect.left)*gridWidth/WIDTH);
+            cursorY = Math.floor((e.clientY - rect.top)*gridHeight/HEIGHT);
+            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done && mouseDown) {
+                cells[cursorX][cursorY].colored = !e.shiftKey;
+                cells[cursorX][cursorY].draw();
+            }
+        });
+        document.onmousedown = function(e) {
+            mouseDown = true;
+            var rect = c.getBoundingClientRect();
+            cursorX = Math.floor((e.clientX - rect.left)*gridWidth/WIDTH);
+            cursorY = Math.floor((e.clientY - rect.top)*gridHeight/HEIGHT);
+            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done) {
+                cells[cursorX][cursorY].colored = !cells[cursorX][cursorY].colored;
+                cells[cursorX][cursorY].draw();
+            }
+        }
+        document.onmouseup = function(e) {
+            mouseDown = false;
+        }
 
         function rect(x, y, w, h) {
             ctx.beginPath();
@@ -88,7 +119,7 @@
             this.colored = false;
             this.sides = [true, true, true, true]; //N, E, S, W
             this.draw = function(inSnake) {
-                ctx.fillStyle = (inSnake ? "red" : (this.visited ? (this.colored ? "green" : "white") : "gray"));
+                ctx.fillStyle = (inSnake ? "red" : (this.visited ? (this.colored ? "lime" : "white") : "gray"));
                 rect(this.x, this.y, 1, 1);
                 ctx.fillStyle = "black";
                 if(this.sides[0]) {
