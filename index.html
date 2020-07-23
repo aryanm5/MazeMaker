@@ -1,2 +1,93 @@
 <!DOCTYPE html>
-hello
+<html lang="en-US">
+    <head>
+        <title>MazeMaker -- AryanM</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+        <meta name="author" content="Aryan M">
+        <meta name="description" content="Easily schedule and sign up for appointments.">
+        <meta name="keywords" content="Aryan M Games, AryanM, Scheduler, AryanM Scheduler">
+        <meta name="language" content="English">
+        <link rel="icon" href="icon.png">
+    </head>
+    <body>
+        <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
+    </body>
+    <script>
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+        c.width = 500;
+        c.height = 500;
+        var WIDTH = c.width;
+        var HEIGHT = c.height;
+        var gridWidth = 10;
+        var gridHeight = 10;
+
+        function rect(x, y, w, h) {
+            ctx.beginPath();
+            ctx.rect(x*WIDTH/gridWidth, y*HEIGHT/gridHeight, w*WIDTH/gridWidth, h*HEIGHT/gridHeight);
+            ctx.closePath();
+            ctx.fill();
+        }
+        function line(x, y, x2, y2) {
+		    ctx.beginPath();
+		    ctx.moveTo(x*WIDTH/gridWidth, y*HEIGHT/gridHeight);
+		    ctx.lineTo(x2*WIDTH/gridWidth, y2*HEIGHT/gridHeight);
+		    ctx.closePath();
+		    ctx.stroke();
+		}
+        function clear() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        }
+
+        function Cell(x, y) {
+            this.x = x;
+            this.y = y;
+            this.visited = false;
+            this.sides = [true, true, true, true]; //N, E, S, W
+            this.draw = function(inSnake) {
+                ctx.fillStyle = (inSnake ? "red" : (this.visited ? "white" : "gray"));
+                rect(this.x, this.y, 1, 1);
+                ctx.fillStyle = "black";
+                if(this.sides[0]) {
+                    line(this.x, this.y, this.x + 1, this.y);
+                }
+                if(this.sides[1]) {
+                    line(this.x+1, this.y, this.x+1, this.y+1);
+                }
+                if(this.sides[2]) {
+                    line(this.x, this.y+1, this.x+1, this.y+1);
+                }
+                if(this.sides[3]) {
+                    line(this.x, this.y, this.x, this.y+1);
+                }
+            }
+        }
+
+        var cells = [];
+        var snake = [];
+
+        for(var i = 0; i < gridWidth; ++i) {
+            cells.push([]);
+            for(var j = 0; j < gridHeight; ++j) {
+                cells[i].push(new Cell(i, j));
+            }
+        }
+
+        function draw() {
+            for(var i = 0; i < cells.length; ++i) {
+                for(var j = 0; j < cells[i].length; ++j) {
+                    cells[i][j].draw();
+                }
+            }
+
+            for(var i = 0; i < snake.length; ++i) {
+                for(var j = 0; j < cells[i].length; ++j) {
+                    cells[i][j].draw(true);
+                }
+            }
+        }
+
+        setInterval(draw, 100);
+    </script>
+</html>
