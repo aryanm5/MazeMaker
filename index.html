@@ -24,12 +24,15 @@
             #info {
                 font-size:1em;
             }
+            #gridWidth {
+                width:4em;
+            }
         </style>
     </head>
     <body>
         <div id="title">MazeMaker</div>
         <div id="info">Aryan Mittal<br>(Explanation in README)</div><br>
-        <div>Grid Width: <input type="number" id="gridWidth" style="width:4em;" value="10"> <button onclick="start()">Start</button></div><br>
+        <div>Grid Size: <input type="number" id="gridWidth" value="10"> <button onclick="start()">Start</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
     <script>
@@ -43,6 +46,8 @@
         var gridHeight = 10;
         var cells = [];
         var snake = [];
+        var changedCells = [];
+        var changedSnakeCells = [];
         var interval;
         var done = false;
 
@@ -88,16 +93,14 @@
         }
 
         function draw() {
-            clear();
-            for(var i = 0; i < cells.length; ++i) {
-                for(var j = 0; j < cells[i].length; ++j) {
-                    if(cells[i][j].visited) { cells[i][j].draw(); }
-                }
+            for(var i = 0; i < changedCells.length; ++i) {
+                changedCells[i].draw();
             }
-
-            for(var i = 0; i < snake.length; ++i) {
-                snake[i].draw(true);
+            for(var i = 0; i < changedSnakeCells.length; ++i) {
+                changedSnakeCells[i].draw(true);
             }
+            changedCells = [];
+            changedSnakeCells = [];
 
             if(!done) {
                 if(snake.length === 0) { //done!
@@ -117,6 +120,7 @@
                     cells[top.x][top.y-1].visited = true;
                     cells[top.x][top.y-1].sides[2] = false;
                     cells[top.x][top.y].sides[0] = false;
+                    changedSnakeCells = [cells[top.x][top.y], cells[top.x][top.y-1]];
                     snake.push(cells[top.x][top.y-1]);
                     found = true;
                     break;
@@ -125,6 +129,7 @@
                     cells[top.x+1][top.y].visited = true;
                     cells[top.x+1][top.y].sides[3] = false;
                     cells[top.x][top.y].sides[1] = false;
+                    changedSnakeCells = [cells[top.x][top.y], cells[top.x+1][top.y]];
                     snake.push(cells[top.x+1][top.y]);
                     found = true;
                     break;
@@ -133,6 +138,7 @@
                     cells[top.x][top.y+1].visited = true;
                     cells[top.x][top.y+1].sides[0] = false;
                     cells[top.x][top.y].sides[2] = false;
+                    changedSnakeCells = [cells[top.x][top.y], cells[top.x][top.y+1]];
                     snake.push(cells[top.x][top.y+1]);
                     found = true;
                     break;
@@ -141,6 +147,7 @@
                     cells[top.x-1][top.y].visited = true;
                     cells[top.x-1][top.y].sides[1] = false;
                     cells[top.x][top.y].sides[3] = false;
+                    changedSnakeCells = [cells[top.x][top.y], cells[top.x-1][top.y]];
                     snake.push(cells[top.x-1][top.y]);
                     found = true;
                     break;
@@ -148,16 +155,18 @@
             }
 
             if(!found) {
-                snake.pop();
+                changedCells = [snake.pop()];
             }
         }
 
         function start() {
             done = false;
-            
+
             gridWidth = Number(document.getElementById("gridWidth").value);
             gridHeight = Number(document.getElementById("gridWidth").value);
 
+            if(gridWidth < 1) { alert("Please choose a grid size greater than 1."); }
+            
             cells = [];
             snake = [];
 
@@ -172,14 +181,17 @@
             cells[0][0].visited = true;
             cells[0][0].sides[0] = false;
             
+            clear();
             interval = setInterval(draw, 25);
         }
         
         function stop() {
             done = true;
-            cells[gridWidth-1][gridHeight-1].sides[2] = false;
             clearInterval(interval);
+            cells[gridWidth-1][gridHeight-1].sides[2] = false;
+            changedCells = [cells[gridWidth-1][gridHeight-1]]; changedSnakeCells = [];
             draw();
+            changedCells = [];
             c.style.border = "none";
         }
 
