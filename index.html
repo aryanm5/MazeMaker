@@ -42,8 +42,8 @@
     </head>
     <body>
         <div id="title">MazeMaker</div>
-        <div id="info">Aryan Mittal<br>(Explanation in README)</div><br>
-        <div>Grid Size: <input type="number" id="gridWidth" value="10"> <button onclick="start()">START</button></div><br>
+        <div id="info">Aryan Mittal<br>(Explanation in <a href="https://github.com/aryanm5/MazeMaker/blob/master/README.md" target="_blank">README</a>)</div><br>
+        <div>Grid Size: <input type="number" id="gridWidth" value="20"> <button onclick="start()">START</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
     <script>
@@ -54,13 +54,14 @@
         if(window.innerWidth < 500) { c.width = window.innerWidth-10; c.height = window.innerWidth-10; }
         var WIDTH = c.width;
         var HEIGHT = c.height;
-        var gridWidth = 10;
-        var gridHeight = 10;
+        var gridWidth = 20;
+        var gridHeight = 20;
         var cells = [];
         var snake = [];
         var changedCells = [];
         var changedSnakeCells = [];
         var interval;
+
         var done = false;
 
         function rect(x, y, w, h) {
@@ -84,9 +85,10 @@
             this.x = x;
             this.y = y;
             this.visited = false;
+            this.colored = false;
             this.sides = [true, true, true, true]; //N, E, S, W
             this.draw = function(inSnake) {
-                ctx.fillStyle = (inSnake ? "red" : (this.visited ? "white" : "gray"));
+                ctx.fillStyle = (inSnake ? "red" : (this.visited ? (this.colored ? "green" : "white") : "gray"));
                 rect(this.x, this.y, 1, 1);
                 ctx.fillStyle = "black";
                 if(this.sides[0]) {
@@ -195,7 +197,8 @@
             
             c.style.border = "1px solid black";
             clear();
-            interval = setInterval(draw, 25);
+            interval = setInterval(draw, 1);
+            interval = setInterval(draw, 1);
         }
         
         function stop() {
@@ -205,6 +208,10 @@
             changedCells = [cells[gridWidth-1][gridHeight-1]]; changedSnakeCells = [];
             draw();
             changedCells = [];
+            ctx.fillStyle = "lime";
+            rect(0, -0.6, 1, 1);
+            ctx.fillStyle = "red";
+            rect(gridWidth-1, gridHeight-1 + 0.6, 1, 1);
             c.style.border = "none";
         }
 
