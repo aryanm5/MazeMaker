@@ -103,11 +103,9 @@
                 cells[cursorX][cursorY].colored = (fromClick ? !cells[cursorX][cursorY].colored : !e.shiftKey);
                 cells[cursorX][cursorY].draw();
                 if(cursorX === 0 && cursorY === 0) {
-                    ctx.fillStyle = "green";
-                    rect(0, -0.6, 1, 1);
+                    drawSF();
                 } else if(cursorX === gridWidth-1 && cursorY === gridHeight-1) {
-                    ctx.fillStyle = "red";
-                    rect(gridWidth-1, gridHeight-1 + 0.6, 1, 1);
+                    drawSF();
                 }
             }
         }
@@ -279,11 +277,23 @@
             changedCells = [cells[gridWidth-1][gridHeight-1]]; changedSnakeCells = [];
             draw();
             changedCells = [];
+            drawSF();
+            c.style.border = "none";
+        }
+
+        function drawSF() {
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            
+            ctx.textBaseline = "top";
             ctx.fillStyle = "green";
             rect(0, -0.6, 1, 1);
+            ctx.fillText("S", 0.5*WIDTH/gridWidth, 0.4*HEIGHT/gridHeight);
+
+            ctx.textBaseline = "bottom";
             ctx.fillStyle = "red";
             rect(gridWidth-1, gridHeight-1 + 0.6, 1, 1);
-            c.style.border = "none";
+            ctx.fillText("F", WIDTH-0.5*WIDTH/gridWidth, HEIGHT-0.4*HEIGHT/gridHeight);
         }
 
         function shuffleArray(array) {
