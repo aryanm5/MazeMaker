@@ -72,6 +72,7 @@
         var cursorX;
         var cursorY;
         var done = false;
+        var finished = false;
 
         function colorCell(e, fromClick) {
             var dim = c.getBoundingClientRect();
@@ -105,6 +106,7 @@
                 if(cursorX === 0 && cursorY === 0) {
                     drawSF();
                 } else if(cursorX === gridWidth-1 && cursorY === gridHeight-1) {
+                    finished = true;
                     drawSF();
                 }
             }
@@ -244,6 +246,7 @@
 
         function start() {
             done = false;
+            finished = false;
 
             gridWidth = Number(document.getElementById("gridWidth").value);
             gridHeight = Number(document.getElementById("gridWidth").value);
@@ -272,6 +275,7 @@
         
         function stop() {
             done = true;
+            finished = false;
             clearInterval(interval);
             cells[gridWidth-1][gridHeight-1].sides[2] = false;
             changedCells = [cells[gridWidth-1][gridHeight-1]]; changedSnakeCells = [];
@@ -291,7 +295,7 @@
             ctx.fillText("S", 0.5*WIDTH/gridWidth, 0.4*HEIGHT/gridHeight);
 
             ctx.textBaseline = "bottom";
-            ctx.fillStyle = "red";
+            if(!finished) { ctx.fillStyle = "red"; }
             rect(gridWidth-1, gridHeight-1 + 0.6, 1, 1);
             ctx.fillText("F", WIDTH-0.5*WIDTH/gridWidth, HEIGHT-0.4*HEIGHT/gridHeight);
         }
