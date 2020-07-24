@@ -55,7 +55,7 @@
     </body>
     <script>
         var c = document.getElementById("canvas");
-        var ctx = c.getContext("2d");
+        var ctx = c.getContext("2d", { alpha: false });
         c.width = 500;
         c.height = 500;
         if(window.innerWidth < 500) { c.width = window.innerWidth-10; c.height = window.innerWidth-10; }
@@ -307,5 +307,11 @@
             }
             return array;
         }
+
+        function init() {
+            ctx.fillStyle = "white";
+            rect(0, 0, gridWidth, gridHeight);
+        }
+        init();
     </script>
 </html>
