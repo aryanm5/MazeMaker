@@ -73,12 +73,34 @@
         var cursorY;
         var done = false;
 
-        function mouseMove(e) {
+        function colorCell(e, fromClick) {
             var dim = c.getBoundingClientRect();
             cursorX = Math.floor((e.clientX - dim.left)*gridWidth/WIDTH);
             cursorY = Math.floor((e.clientY - dim.top)*gridHeight/HEIGHT);
-            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done && (e.shiftKey === undefined || mouseDown)) { //e.shiftkey is undefined on mobile
-                cells[cursorX][cursorY].colored = !e.shiftKey;
+            var valid = false;
+            if(!done || cursorX < 0 || cursorY < 0 || cursorX > gridWidth-1 || cursorY > gridHeight-1 || (e.shiftKey !== undefined && !mouseDown)) {
+                return;
+            }
+            if((e.shiftKey || fromClick) && cells[cursorX][cursorY].colored) {
+                valid = true; //just trying to erase
+            }
+            else if(cursorX === 0 && cursorY === 0) {
+                valid = true;
+            }
+            else if(cursorY > 0 && cells[cursorX][cursorY-1].colored && !cells[cursorX][cursorY].sides[0]){
+                valid = true; //valid to the north
+            }
+            else if(cursorX < gridWidth-1 && cells[cursorX+1][cursorY].colored && !cells[cursorX][cursorY].sides[1]) {
+                valid = true; //east
+            }
+            else if(cursorY < gridWidth-1 && cells[cursorX][cursorY+1].colored && !cells[cursorX][cursorY].sides[2]) {
+                valid = true; //south
+            }
+            else if(cursorX > 0 && cells[cursorX-1][cursorY].colored && !cells[cursorX][cursorY].sides[3]) {
+                valid = true; //west
+            }
+            if(valid) { //e.shiftkey is undefined on mobile
+                cells[cursorX][cursorY].colored = (fromClick ? !cells[cursorX][cursorY].colored : !e.shiftKey);
                 cells[cursorX][cursorY].draw();
                 if(cursorX === 0 && cursorY === 0) {
                     ctx.fillStyle = "green";
@@ -91,20 +113,10 @@
         }
         function onMouseDown(e) {
             mouseDown = true;
-            var dim = c.getBoundingClientRect();
-            cursorX = Math.floor((e.clientX - dim.left)*gridWidth/WIDTH);
-            cursorY = Math.floor((e.clientY - dim.top)*gridHeight/HEIGHT);
-            if(cursorX >= 0 && cursorY >= 0 && cursorX < WIDTH && cursorY < HEIGHT && done) {
-                cells[cursorX][cursorY].colored = !cells[cursorX][cursorY].colored;
-                cells[cursorX][cursorY].draw();
-                if(cursorX === 0 && cursorY === 0) {
-                    ctx.fillStyle = "green";
-                    rect(0, -0.6, 1, 1);
-                } else if(cursorX === gridWidth-1 && cursorY === gridHeight-1) {
-                    ctx.fillStyle = "red";
-                    rect(gridWidth-1, gridHeight-1 + 0.6, 1, 1);
-                }
-            }
+            colorCell(e, true);
+        }
+        function mouseMove(e) {
+            colorCell(e);
         }
         c.addEventListener("mousemove", (e) => {
             mouseMove(e);
