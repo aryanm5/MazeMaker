@@ -14,3 +14,5 @@ The program needs to remember where it has gone to know where to backtrack to. I
 In the worst case scenario, this method would need to be able to store every cell in memory, but the real amount is usually much less. For normal-sized grids, it wouldn't be a problem either way.
 
 At first, I was clearing the canvas and redrawing the entire grid at each frame, which worked fine for small mazes but noticeably slowed down large mazes. I realized that since only 1 to 2 cells actually changed each frame, I only needed to redraw those changed cells. After the change, mazes are generated at about the same speed, regardless of size.
+
+Users can try solving the maze by dragging their mouse to color cells, and shift+dragging to erase. Erase on mobile devices by tapping on colored cells. The Start and Finish of the maze are marked with green and red respectively.
