@@ -37,6 +37,10 @@
             #gridWidth {
                 width:4em;
             }
+            #centeredForRange, #stepsPerTick {
+                display:inline-block;
+                vertical-align:middle;
+            }
             button {
                 font-weight:bold;
                 padding-left:0.5em;
@@ -50,6 +54,10 @@
     <body>
         <div id="title">MazeMaker</div>
         <div id="info">Aryan Mittal<br>(Explanation in <a href="https://github.com/aryanm5/MazeMaker/" target="_blank">README</a>)</div><br>
+        <div id="centeredForRange">
+            <label for="stepsPerTick">Speed: </label> <input type="range" id="stepsPerTick" min="0" max="200" value="1" oninput="stepsPerTick = Number(this.value); document.getElementById('showStepsPerTick').innerHTML = this.value;" onchange="stepsPerTick = Number(this.value); document.getElementById('showStepsPerTick').innerHTML = this.value;">
+            <span id="showStepsPerTick">1</span>
+        </div>
         <div>Grid Size: <input type="number" id="gridWidth" value="20"> <button onclick="start()">START</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
@@ -177,21 +185,29 @@
             }
         }
 
+        var stepsPerTick = 1;
+
         function draw() {
-            for(var i = 0; i < changedCells.length; ++i) {
-                changedCells[i].draw();
-            }
             for(var i = 0; i < changedSnakeCells.length; ++i) {
                 changedSnakeCells[i].draw(true);
             }
+            for(var i = 0; i < changedCells.length; ++i) {
+                changedCells[i].draw();
+            }
+            
             changedCells = [];
             changedSnakeCells = [];
 
-            if(!done) {
-                if(snake.length === 0) { //done!
-                    stop();
-                } else {
-                    snakeStep();
+            for(var i = 0; i < stepsPerTick; ++i) {
+                if(!done) {
+                    if(snake.length === 0) { //done!
+                        done = true;
+                        draw();
+                        stop();
+                        break;
+                    } else {
+                        snakeStep();
+                    }
                 }
             }
         }
@@ -205,7 +221,7 @@
                     cells[top.x][top.y-1].visited = true;
                     cells[top.x][top.y-1].sides[2] = false;
                     cells[top.x][top.y].sides[0] = false;
-                    changedSnakeCells = [cells[top.x][top.y], cells[top.x][top.y-1]];
+                    changedSnakeCells.push(...[cells[top.x][top.y], cells[top.x][top.y-1]]);
                     snake.push(cells[top.x][top.y-1]);
                     found = true;
                     break;
@@ -214,7 +230,7 @@
                     cells[top.x+1][top.y].visited = true;
                     cells[top.x+1][top.y].sides[3] = false;
                     cells[top.x][top.y].sides[1] = false;
-                    changedSnakeCells = [cells[top.x][top.y], cells[top.x+1][top.y]];
+                    changedSnakeCells.push(...[cells[top.x][top.y], cells[top.x+1][top.y]]);
                     snake.push(cells[top.x+1][top.y]);
                     found = true;
                     break;
@@ -223,7 +239,7 @@
                     cells[top.x][top.y+1].visited = true;
                     cells[top.x][top.y+1].sides[0] = false;
                     cells[top.x][top.y].sides[2] = false;
-                    changedSnakeCells = [cells[top.x][top.y], cells[top.x][top.y+1]];
+                    changedSnakeCells.push(...[cells[top.x][top.y], cells[top.x][top.y+1]]);
                     snake.push(cells[top.x][top.y+1]);
                     found = true;
                     break;
@@ -232,7 +248,7 @@
                     cells[top.x-1][top.y].visited = true;
                     cells[top.x-1][top.y].sides[1] = false;
                     cells[top.x][top.y].sides[3] = false;
-                    changedSnakeCells = [cells[top.x][top.y], cells[top.x-1][top.y]];
+                    changedSnakeCells.push(...[cells[top.x][top.y], cells[top.x-1][top.y]]);
                     snake.push(cells[top.x-1][top.y]);
                     found = true;
                     break;
@@ -240,7 +256,7 @@
             }
 
             if(!found) {
-                changedCells = [snake.pop()];
+                changedCells.push(snake.pop());
             }
         }
 
@@ -269,7 +285,6 @@
             
             c.style.border = "1px solid black";
             clear();
-            interval = setInterval(draw, 1);
             interval = setInterval(draw, 1);
         }
         
@@ -313,5 +328,9 @@
             rect(0, 0, gridWidth, gridHeight);
         }
         init();
+
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        }
     </script>
 </html>
