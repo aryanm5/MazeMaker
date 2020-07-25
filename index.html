@@ -58,7 +58,7 @@
             <label for="stepsPerTick">Speed: </label> <input type="range" id="stepsPerTick" min="0" max="200" value="1" oninput="stepsPerTick = Number(this.value); document.getElementById('showStepsPerTick').innerHTML = this.value;" onchange="stepsPerTick = Number(this.value); document.getElementById('showStepsPerTick').innerHTML = this.value;">
             <span id="showStepsPerTick">1</span>
         </div>
-        <div>Grid Size: <input type="number" id="gridWidth" value="20"> <button onclick="start()">START</button></div><br>
+        <div>Grid Size: <input type="number" id="gridWidth" value="20"> <button onclick="start()">START</button> <button id="solutionButton" onclick="showSolution()" disabled>ANSWER</button></div><br>
         <canvas id="canvas">Your browser does not support the Canvas element. This won't work!</canvas>
     </body>
     <script>
@@ -75,6 +75,7 @@
         var snake = [];
         var changedCells = [];
         var changedSnakeCells = [];
+        var solution = [];
         var interval;
         var mouseDown = false;
         var cursorX;
@@ -216,6 +217,9 @@
             var top = snake[snake.length-1];
             var order = shuffleArray(["N", "E", "S", "W"]);
             var found = false;
+            if(top.x === gridWidth-1 && top.y === gridHeight-1) {
+                solution = snake.slice(); //.slice() copies array
+            }
             for(var i = 0; i < order.length; ++i) {
                 if(order[i] === "N" && top.y > 0 && !cells[top.x][top.y-1].visited) { //go north
                     cells[top.x][top.y-1].visited = true;
@@ -260,6 +264,24 @@
             }
         }
 
+        function showSolution() {
+            for(var i = 0; i < gridWidth; ++i) {
+                for(var j = 0; j < gridHeight; ++j) {
+                    if(cells[i][j].colored) {
+                        cells[i][j].colored = false;
+                        cells[i][j].draw();
+                    }
+                }
+            }
+            for(var i = 0; i < solution.length; ++i) {
+                if(!cells[solution[i].x][solution[i].y].colored) {
+                    cells[solution[i].x][solution[i].y].colored = true;
+                    cells[solution[i].x][solution[i].y].draw();
+                }
+            }
+            drawSF();
+        }
+
         function start() {
             done = false;
             finished = false;
@@ -267,7 +289,9 @@
             gridWidth = Number(document.getElementById("gridWidth").value);
             gridHeight = Number(document.getElementById("gridWidth").value);
 
-            if(gridWidth < 1) { alert("Please choose a grid size greater than 1."); }
+            if(gridWidth < 1) { alert("Please choose a grid size greater than 1."); return; }
+
+            document.getElementById("solutionButton").disabled = true;
 
             cells = [];
             snake = [];
@@ -298,6 +322,7 @@
             changedCells = [];
             drawSF();
             c.style.border = "none";
+            document.getElementById("solutionButton").disabled = false;
         }
 
         function drawSF() {
