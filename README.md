@@ -1,4 +1,7 @@
 # MazeMaker
+
+Live demo at [mittaldev.com/mazemaker](https://mittaldev.com/mazemaker/)
+
 MazeMaker generates mazes with specified dimensions through a method called **recursive backtracking**.
 
 Recursive backtracking is one of the handful of maze generation algorithms that creates a perfect maze, which is a solvable maze with no unreachable areas or loops.
